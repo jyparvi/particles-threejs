@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Three.js GPU Particles</title>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        #hud { position: fixed; top: 16px; left: 16px; margin: 0; color: white; font: bold 16px/1.4 sans-serif; text-shadow: 0 1px 3px black; pointer-events: none; }
+        .lil-gui h2 { margin: 0; padding: 4px; font-size: inherit; }
+        .lil-gui .controller.color input[type="text"] { display: none; }
+    </style>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.webgpu.js",
+                "three/webgpu": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.webgpu.js",
+                "three/tsl": "https://cdn.jsdelivr.net/npm/three@0.187.0/build/three.tsl.js",
+                "three/addons/loaders/FBXLoader.js": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/loaders/FBXLoader.js",
+                "three/addons/libs/lil-gui.module.min.js": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/libs/lil-gui.module.min.js",
+                "three/addons/tsl/display/BloomNode.js": "https://cdn.jsdelivr.net/npm/three@0.187.0/examples/jsm/tsl/display/BloomNode.js"
+            }
+        }
+    </script>
+</head>
+<body>
+    <pre id="hud"></pre>
+    <script type="module" src="./scripts/particle_controller.js"></script>
+</body>
+</html>
