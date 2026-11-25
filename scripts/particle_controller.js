@@ -45,35 +45,32 @@ if (!renderer.backend.isWebGPUBackend)
     renderer.dispose();
     throw new Error("WebGPU could not initialize.");
 }
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
 document.body.appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0.035, 0.045, 0.075);
-
-const camera = new THREE.PerspectiveCamera(60.0, window.innerWidth / window.innerHeight, 1.0, 12.0);
-camera.position.z = 5.0;
-
 scene.add(new THREE.HemisphereLight(0x99abd1, 0x454952, 0.75));
 const light = new THREE.DirectionalLight(0xffffff, 2.0);
 light.position.set(0.3214, 0.7660, 0.5567);
 scene.add(light);
 
-const textureLoader = new THREE.TextureLoader();
-const [model, d20Texture, sphereTexture] = await Promise.all([
-    new FBXLoader().loadAsync('./models/d20.fbx'),
-    textureLoader.loadAsync('./textures/d20.png'),
-    textureLoader.loadAsync('./textures/sphere.png'),
-]);
+const camera = new THREE.PerspectiveCamera(60.0, window.innerWidth / window.innerHeight, 1.0, 12.0);
+camera.position.z = 5.0;
 
-d20Texture.colorSpace = sphereTexture.colorSpace = THREE.SRGBColorSpace;
-const d20Geometry = model.getObjectByProperty('isMesh', true).geometry;
+const textureLoader = new THREE.TextureLoader();
+const d20Texture = await textureLoader.loadAsync('./textures/d20.png');
+const sphereTexture = await textureLoader.loadAsync('./textures/sphere.png');
+d20Texture.colorSpace = THREE.SRGBColorSpace;
+sphereTexture.colorSpace = THREE.SRGBColorSpace;
+
+const d20Model = await new FBXLoader().loadAsync('./models/d20.fbx');
+const d20Geometry = d20Model.getObjectByProperty('isMesh', true).geometry;
 d20Geometry.scale(0.01, 0.01, 0.01);
 const d20Mesh = new THREE.Mesh(d20Geometry, new THREE.MeshStandardNodeMaterial({
     map: d20Texture, roughness: 0.5,
     emissiveNode: diffuseColor.rgb.mul(color(0x99abd1), 0.12),
 }));
 d20Mesh.rotation.x = Math.PI * 0.5;
+
 scene.add(d20Mesh);
 scene.add(new THREE.Mesh(
     new THREE.SphereGeometry(6.0, 64, 32).rotateY(Math.PI * 0.5),
