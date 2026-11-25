@@ -1,6 +1,6 @@
 import { struct, wgslFn } from 'three/tsl';
 
-const particleVertexOutput = struct({ position: 'vec4', uv: 'vec2', particle_color: 'vec4' }, 'ParticleVertexOutput');
+const particleVertexOutput = struct({ position: 'vec4', uv: 'vec2', particle_color: 'vec3' }, 'ParticleVertexOutput');
 
 // Approximate the particle's distance to the D20 object's surface.
 export function createDistanceToD20Surface(d20Planes) {
@@ -26,7 +26,7 @@ export function createParticleVertex(d20Planes) {
     return wgslFn(`
         fn particle_vertex(world_position: vec3f, velocity: vec3f, corner: vec2f,
             view_matrix: mat4x4f, projection_matrix: mat4x4f, particle_size: f32, velocity_stretch: f32,
-            d20_world_to_local: mat4x4f, near_particle_color: vec4f, far_particle_color: vec4f) -> ParticleVertexOutput
+            d20_world_to_local: mat4x4f, near_particle_color: vec3f, far_particle_color: vec3f) -> ParticleVertexOutput
         {
             let clip_position = projection_matrix * (view_matrix * vec4f(world_position, 1.0f));
 
@@ -55,13 +55,13 @@ export function createParticleVertex(d20Planes) {
 
 // Compute the particle's final color with glow and a soft circular edge.
 export const particleFragment = wgslFn(`
-    fn particle_fragment(particle_color: vec4f, uv: vec2f, glow_color: vec3f, glow_intensity: f32, glow_sharpness: f32) -> vec4f {
+    fn particle_fragment(particle_color: vec3f, uv: vec2f, glow_color: vec3f, glow_intensity: f32, glow_sharpness: f32) -> vec4f {
         let radius = length(uv - 0.5f) * 2.0f;
         let edge = 1.0f - smoothstep(0.84f, 1.0f, radius);
         let core = pow(clamp(1.0f - radius, 0.0f, 1.0f), max(glow_sharpness, 0.01f));
         let glow = core * glow_intensity;
-        let color = mix(particle_color.rgb, glow_color, clamp(glow, 0.0f, 1.0f)) * (1.0f + glow);
+        let color = mix(particle_color, glow_color, clamp(glow, 0.0f, 1.0f)) * (1.0f + glow);
 
-        return vec4f(color, particle_color.a * edge);
+        return vec4f(color, edge);
     }
 `);

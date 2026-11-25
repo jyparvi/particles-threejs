@@ -195,7 +195,7 @@ function rebuildParticles()
     geometry.setAttribute('particlePosition', positions.value);
     geometry.setAttribute('particleVelocity', velocities.value);
     const material = new THREE.MeshBasicNodeMaterial({ transparent: true, depthWrite: false, side: THREE.DoubleSide });
-    const particleColor = varyingProperty('vec4');
+    const particleColor = varyingProperty('vec3');
     const particleUV = varyingProperty('vec2');
     
     material.vertexNode = Fn(() =>
@@ -207,8 +207,8 @@ function rebuildParticles()
             view_matrix: cameraViewMatrix, projection_matrix: cameraProjectionMatrix,
             particle_size: param('particleSize'), velocity_stretch: param('velocityStretch'),
             d20_world_to_local: worldToLocal,
-            near_particle_color: vec4(nearColor, 1.0),
-            far_particle_color: vec4(farColor, 1.0),
+            near_particle_color: nearColor,
+            far_particle_color: farColor,
         }).toVar();
         particleColor.assign(vertex.get('particle_color'));
         particleUV.assign(vertex.get('uv'));
